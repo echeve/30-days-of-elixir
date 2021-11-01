@@ -1,60 +1,42 @@
 # https://hexdocs.pm/elixir/IO.html
 # https://hexdocs.pm/elixir/File.html
+# http://elixir-lang.org/getting-started/module-attributes.html
 
-defmodule CowInterrogator do
-
-  # docstring are quite useful you can generate docs out of them
-  # check: http://elixir-lang.org/getting-started/module-attributes.html
-  # for more info
-  @doc """
-  Gets name from standard IO
+defmodule Ejercicio4 do
+  @moduledoc """
+  Ejercicio sobre el uso de la librería IO y sobre la lectura de ficheros
   """
-  def get_name do
-    IO.gets("What is your name? ")
-    |> String.trim
+
+  defp get_Nombre do
+    IO.gets("¿Cuál es tu nombre?")
+    |> String.trim()
   end
 
-  def get_cow_lover do
-    IO.getn("Do you like cows? [y|n] ", 1)
+  defp get_Pregunta_Vacas do
+    IO.getn("¿Te gustan las vacas? [s|n]", 1)
+    |> String.downcase()
   end
 
-  def interrogate do
-    name = get_name()
-    case String.downcase(get_cow_lover()) do
-      "y" ->
-        IO.puts "Great! Here's a cow for you #{name}:"
-        IO.puts cow_art()
-      "n" ->
-        IO.puts "That's a shame, #{name}."
-      _ ->
-        IO.puts "You should have entered 'y' or 'n'."
-    end
-  end
-
-  def cow_art do
+  defp leer_Dibujo_Vaca do
     path = Path.expand("support/cow.txt", __DIR__)
     case File.read(path) do
       {:ok, art} -> art
-      {:error, _} -> IO.puts "Error: cow.txt file not found"; System.halt(1)
+      {:error, _} -> IO.puts("No se puede encontrar el fihcero cow.txt;", System.halt(:abort))
     end
   end
-end
 
-ExUnit.start
-
-
-defmodule InputOutputTest do
-  use ExUnit.Case
-  import String
-
-  test "checks if cow_art returns string from support/cow.txt" do
-    # this call checks if cow_art function returns art from txt file
-    art = CowInterrogator.cow_art
-    assert trim(art) |> first == "(" # first is implemented in String module
+  @doc """
+  Función encargada de leer desde la entrada standard y montar la respuesta
+  """
+  def main do
+      nombre = get_Nombre()
+      mostrarVaca = get_Pregunta_Vacas()
+      case mostrarVaca do
+        "s" -> IO.puts("¡Genial! aqui tienes una vaca, #{nombre}")
+               IO.puts(leer_Dibujo_Vaca())
+        "n" -> IO.puts("Una pena #{nombre}, no se muestra el dibujo.")
+      end
   end
 end
 
-# call interrogate performs most of the work
-# asks about your name, your interests in cows
-# and renders cow art
-CowInterrogator.interrogate
+Ejercicio4.main()
